@@ -29,9 +29,3 @@ attributes:
     label: "Walltime (HH:MM:SS)"
     value: "02:00:00"
     help: "How long you want this session to run."
-
-  path:
-    widget: "path_selector"
-    directory: "/tmp"
-    show_hidden: true
-    show_files: true
