@@ -1,0 +1,8 @@
+---
+name: "DSL Ollama Chat"
+category: "AI/ML"
+description: >
+  Interactive app that launches a browser-based chat UI to Ollama
+  
+
+role: batch_connect

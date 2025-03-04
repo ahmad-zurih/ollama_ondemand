@@ -1,0 +1,31 @@
+---
+cluster: "ubelix"
+
+form:
+  - partition
+  - num_gpus
+  - time
+
+attributes:
+  partition:
+    widget: "select"
+    label: "Partition"
+    options:
+      - ["GPU Partition", "gpu"]
+    value: "gpu"
+    help: "Select the GPU partition."
+
+  num_gpus:
+    widget: "select"
+    label: "GPUs"
+    options:
+      - ["1 GPU", "1"]
+      - ["2 GPUs", "2"]
+    value: "1"
+    help: "Number of GPUs to allocate."
+
+  time:
+    widget: "text_field"
+    label: "Walltime (HH:MM:SS)"
+    value: "02:00:00"
+    help: "How long you want this session to run."

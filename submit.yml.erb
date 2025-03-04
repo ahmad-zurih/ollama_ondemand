@@ -1,0 +1,18 @@
+---
+batch_connect:
+  template: "basic"
+
+  # Let OnDemand pick a random port and figure out the node name from SLURM
+  set_port: "random"
+  websockify: true
+
+script:
+  job_name: "ollama_chat_<%= session_id %>"
+  time: "<%= time %>"
+
+  native:
+    - "--partition=<%= partition %>"
+    - "--gres=gpu:rtx3090:<%= num_gpus %>"
+    - "--cpus-per-task=4"
+    - "--mem=16G"
+
