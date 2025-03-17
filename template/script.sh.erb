@@ -77,7 +77,8 @@ EOF
 module load python/3.9 &>/dev/null || true  # remove if HPC doesn't have it
 
 python -m pip install --user --upgrade pip
-python -m pip install --user streamlit requests
+python -m pip install --user requests
+conda install conda-forge::streamlit
 
 ##############################################################################
 # 5) Launch Streamlit on the OOD-provided port
