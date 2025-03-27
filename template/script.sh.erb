@@ -12,7 +12,7 @@ cd "${HOME}"
 # Start the Ollama server in the background
 #    Adjust the Singularity path if needed
 ##############################################################################
-apptainer run --nvccli /storage/research/dsl_shared/solutions/singularity/ollama.sif \
+apptainer run /storage/research/dsl_shared/solutions/singularity/ollama.sif \
   ollama serve &
 
 # Wait a bit to ensure Ollama server is ready (listening on 127.0.0.1:11411)
