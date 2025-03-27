@@ -1,31 +1,215 @@
+# Batch Connect app configuration file
+#
+# @note Used to define the submitted cluster, title, description, and
+#   hard-coded/user-defined attributes that make up this Batch Connect app.
 ---
 cluster: "ubelix"
-
-form:
-  - partition
-  - num_gpus
-  - time
-
 attributes:
-  partition:
+  # Set the corresponding modules that need to be loaded for Streamlit UI to run
+  #
+  # @note It is called within the batch job as `module load <modules>` if
+  #   defined
+  # @example Do not load any modules
+  #     modules: ""
+  # @example Using default python module
+  #     modules: "python"
+  # @example Using specific python module
+  #     modules: "python/3.5"
+  # @example Using combination of modules
+  #     modules: "python/3.5 cuda/8.0.44"
+  modules: ""
+
+# All of the attributes that make up the Dashboard form (in respective order),
+# and made available to the submit configuration file and the template ERB
+# files
+#
+# @note You typically do not need to modify this unless you want to add a new
+#   configurable value
+# @note If an attribute listed below is hard-coded above in the `attributes`
+#   option, then it will not appear in the form page that the user sees in the
+#   Dashboard
+  email:
+    widget: "text_field"
+    label: "Email"
+    help: |
+      Please provide a valid email address. Without this you will not receive a notification on start.
+  email_on_start:
+    widget: 'check_box'
+    html_options:
+      data:
+        hide-email-when-unchecked: true
+  type_gpu:
+    widget: "select"
+    label: "GPU Type"
+    default: "RTX 4090"
+    help: |
+      The type of GPU to request. The default ist a RTX 4090.
+    options:
+      - [
+          "RTX 4090", "rtx4090",
+          data-min-num-cores: 1,
+          data-max-num-cores: 16,
+        ]
+      - [
+          "RTX 3090", "rtx3090",
+          data-min-num-cores: 1,
+          data-max-num-cores: 4,
+        ]
+      - [
+          "H100", "h100",
+          data-min-num-cores: 1,
+          data-max-num-cores: 16,
+        ]
+      - [
+          "A100", "a100",
+          data-min-num-cores: 1,
+          data-max-num-cores: 20,
+        ]
+  cuda_version:
+    label: "CUDA Version"
+    value: ""
+    help: |
+      The module version of Cuda you wish to use, if blank the default cuda will be used
+  part:
+    display: true
     widget: "select"
     label: "Partition"
+    default: "interactive"
+    help: |
+      This defines the partition/queue you wish to submit the job to. The default is
+      the interactive CPU partition.
     options:
-      - ["GPU Partition", "gpu"]
-    value: "gpu"
-    help: "Select the GPU partition."
-
-  num_gpus:
+      - [
+          "interactive", "interactive",
+          data-min-num-cores: 2,
+          data-max-num-cores: 12,
+          data-hide-auto-qos: true,
+          data-set-auto-qos: 'job_interactive',
+          data-hide-type-gpu: true,
+          data-hide-cuda-version: true
+        ]
+      - [
+          "gpu", "gpu",
+          data-hide-auto-qos: true,
+          data-set-auto-qos: 'job_gpu',
+        ]
+      - [
+          "gpu-invest", "gpu-invest",
+        ]
+      - [
+          "bdw", "bdw",
+          data-min-num-cores: 2,
+          data-max-num-cores: 20,
+          data-hide-type-gpu: true,
+          data-hide-cuda-version: true
+        ]
+      - [
+          "epyc2", "epyc2",
+          data-min-num-cores: 2,
+          data-max-num-cores: 128,
+          data-hide-type-gpu: true,
+          data-hide-cuda-version: true
+        ]
+      - [
+          "icpu", "icpu",
+          data-min-num-cores: 2,
+          data-max-num-cores: 128,
+          data-hide-type-gpu: true,
+          data-hide-cuda-version: true
+        ]
+  bc_num_hours:
+    widget: "number_field"
+    label: "Time limit in hours."
+    value: 1
+    min: 1
+    step: 1
+    max: 12
+    help: |
+      A maximum of 12 hours are permitted on UBELIX Interactive. The default is 1 hours.
+  num_cores:
+    display: true
+    widget: "number_field"
+    label: "Number of Cores"
+    value: 4
+    step: 1
+    help: |
+      By default 4 cores will be allocated.
+  memtask:
+    display: true
     widget: "select"
-    label: "GPUs"
+    value:  "default"
+    label:  "Memory per Core"
+    help: |
+      **default** 4 GB per core.
+      Select a value to request a different amount per core
     options:
-      - ["1 GPU", "1"]
-      - ["2 GPUs", "2"]
-    value: "1"
-    help: "Number of GPUs to allocate."
+      - [ "2 GB/core", "2" ]
+      - [ "4 GB/core", "4" ]
+      - [ "8 GB/core", "8" ]
+      - [ "16 GB/core", "16" ]
+  instance:
+    widget: "select"
+    value: "default"
+    label: "Instance Size"
+    help: |
+      Select the size of Jupyter Lab Instance you would like
+      the options are:
 
-  time:
+        - small (4 core, 16GB memory)
+        - medium (8 core, 32GB memory)
+        - large (16 core, 64GB memory)
+
+      Alternatively select "Custom" and choose memory and core
+      counts separately.
+    options:
+      - [
+          "Small", "Small",
+          data-hide-num-cores: true,
+          data-hide-memtask: true,
+          data-set-num-cores: 4,
+          data-set-memtask: 4
+        ]
+      - [
+          "Medium", "Medium",
+          data-hide-num-cores: true,
+          data-hide-memtask: true,
+          data-set-num-cores: 8,
+          data-set-memtask: 4
+        ]
+      - [
+          "Large", "Large",
+          data-hide-num-cores: true,
+          data-hide-memtask: true,
+          data-set-num-cores: 16,
+          data-set-memtask: 4
+        ]
+      - [
+          "Custom", "Custom",
+          data-min-num-cores: 1,
+          data-max-num-cores: 128,
+        ]
+  reservation:
     widget: "text_field"
-    label: "Walltime (HH:MM:SS)"
-    value: "02:00:00"
-    help: "How long you want this session to run."
+    label: "Reservation"
+    help: |
+      (optional) Name of active Slurm reservation to use for this session.
+  advanced_mode:
+    widget: 'check_box'
+    html_options:
+      data:
+        hide-reservation-when-unchecked: true
+form:
+  - auto_accounts
+  - part
+  - type_gpu
+  - auto_qos
+  - bc_num_hours
+  - instance
+  - num_cores
+  - memtask
+  - cuda_version
+  - modules
+  - advanced_mode
+  - reservation
+  - email_on_start
+  - email

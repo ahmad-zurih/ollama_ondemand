@@ -1,6 +1,10 @@
-#!/bin/bash
-# template/script.sh.erb
+#!/usr/bin/env bash
 
+# Benchmark info
+echo "TIMING - Starting main script at: $(date)"
+
+# Set working directory to home directory
+cd "${HOME}"
 
 ##############################################################################
 # 2) Start the Ollama server in the background
@@ -74,6 +78,21 @@ EOF
 # 4) Load Python / Install dependencies
 #    If your site has a valid python module, load it. Otherwise remove or fix.
 ##############################################################################
+<%- unless context.modules.blank? -%>
+# Purge the module environment to avoid conflicts
+module purge
+
+# Load the require modules
+module load <%= context.modules %>
+
+<%- if context.part.include? "gpu" or context.part.include? "gpu-invest" -%>
+module load <%= context.cuda_version.blank? ? "CUDA" : context.cuda_version %>
+<%- end -%>
+
+# List loaded modules
+module list
+<%- end -%>
+
 module load python/3.9 &>/dev/null || true  # remove if HPC doesn't have it
 
 python -m pip install --user --upgrade pip
@@ -83,10 +102,25 @@ python -m pip install --user streamlit requests
 # 5) Launch Streamlit on the OOD-provided port
 #    OOD typically sets $PORT or $WEB_PORT. Fallback to 8080 if not set.
 ##############################################################################
-PORT="${PORT:-8080}"
-echo "Starting Streamlit on port $PORT..."
+# Benchmark info
+echo "TIMING - Starting streamlit at: $(date)"
 
-streamlit run app.py \
-  --server.port $PORT \
-  --server.headless true \
-  --browser.gatherUsageStats false
+# streamlit run app.py \
+#   --server.address $NODE_IP \
+#   --server.baseUrlPath "node/$HOST/$PORT" \
+#   --server.port $PORT \
+#   --server.host $HOST \
+#   --server.headless true \
+#   --browser.gatherUsageStats false
+
+# Use apptainer build --fakeroot $HOME/ondemand/dev/streamlit/streamlit.sif ../src/streamlit.def
+# to build the Singularity container
+
+# Launch the Streamlit UI server
+set -x
+apptainer run \
+    --env BASEURLPATH="$SERVER_BASEURLPATH" \
+    --env SERVER_ADDRESS="ondemand.hpc.unibe.ch" \
+    --env SERVER_PORT="$SERVER_PORT" \
+    --env TOKEN="$TOKEN" \
+    $HOME/ondemand/dev/ollama_ondemand/streamlit.sif

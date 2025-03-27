@@ -1,18 +1,66 @@
+# Job submission configuration file
+#
 ---
+
+#
+# Configure the content of the job script for the batch job here
+# @see http://www.rubydoc.info/gems/ood_core/OodCore/BatchConnect/Template
+#
 batch_connect:
+  # We use the basic web server template for generating the job script
+  #
+  # @note Do not change this unless you know what you are doing!
   template: "basic"
 
-  # Let OnDemand pick a random port and figure out the node name from SLURM
-  set_port: "random"
-  websockify: true
+  # You can override the command used to query the hostname of the compute node
+  # here
+  #
+  # @note It is **highly** recommended this be set in the global cluster
+  #   configuration file so that all apps can take advantage of it by default
+  #
+  set_host: "host=$(hostname -A | awk '{print $1}')"
 
+# script:
+#   job_name: "ollama_chat_<%= session_id %>"
+#   time: "<%= time %>"
+
+#   native:
+#     - "--partition=<%= partition %>"
+#     - "--gres=gpu:<%= gpu_type %>:<%= num_gpus %>"
+#     - "--cpus-per-task=4"
+#     - "--mem=16G"
+
+#
+# Configure the job script submission parameters for the batch job here
+# @see http://www.rubydoc.info/gems/ood_core/OodCore/Job/Script
+#
 script:
   job_name: "ollama_chat_<%= session_id %>"
   time: "<%= time %>"
-
   native:
-    - "--partition=<%= partition %>"
-    - "--gres=gpu:rtx3090:<%= num_gpus %>"
-    - "--cpus-per-task=4"
-    - "--mem=16G"
+    - "-N 1"
+    - "-n <%= bc_num_slots.blank? ? 1 : bc_num_slots.to_i %>"
+    - "--cpus-per-task=<%= num_cores.blank? ? 1 : num_cores.to_i %>"
+    - "--mem-per-cpu=<%= memtask.blank? ? 4 : memtask.to_i %>G"
+<%- if part.include? "interactive" -%>
+    - "--partition=epyc2"
+<%- elsif part.include? "icpu" -%>
+    - "--partition=<%= part + "-" + auto_qos.rpartition('-').last %>"
+<%- else -%>
+    - "--partition=<%= part %>"
+<%- end -%>
+    - "--qos=<%= auto_qos %>"
+    - "--account=<%= auto_accounts %>"
+    - "--time=<%= bc_num_hours.blank? ? 1 : bc_num_hours.to_i %>:00:00"
+    - "--job-name=ood-streamlit"
+<%- if part.include? "gpu" or part.include? "gpu-invest" -%>
+    - "--gres=gpu:<%= type_gpu.blank? ? rtx4090 : type_gpu %>:1"
+<%- end -%>
+<%- if email_on_start == "1" and not email.blank? -%>
+    - "--mail-type=BEGIN"
+    - "--mail-user=<%= email %>"
+<%- end -%>
+<%- if not reservation.blank? -%>
+    - "--reservation=<%= reservation %>"
+<%- end -%>
 

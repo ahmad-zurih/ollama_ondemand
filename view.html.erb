@@ -1,13 +1,6 @@
-<% if host && port %>
-  <div class="alert alert-info">
-    <p>Your Ollama Chat app is running!</p>
-    <p>Click the button below to connect:</p>
-    <a class="btn btn-primary" href="/node/<%= host %>/<%= port %>/" target="_blank">
-      Connect to Streamlit Chat
-    </a>
-  </div>
-<% else %>
-  <div class="alert alert-warning">
-    <p>Missing <code>host</code> or <code>port</code>. Check your logs!</p>
-  </div>
-<% end %>
+<form action="/node/<%= host %>/<%= port %>/" method="get" target="_blank">
+  <input type="hidden" name="token" value="<%= password %>">
+  <button class="btn btn-primary" type="submit">
+    <i class="fa fa-eye"></i> Connect to Streamlit Chat
+  </button>
+</form>

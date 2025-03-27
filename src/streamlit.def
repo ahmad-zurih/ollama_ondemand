@@ -1,0 +1,22 @@
+BootStrap: docker
+From: python:3.11
+
+%post
+    # Create application directory
+    mkdir -p /app
+
+    # Install Python dependencies
+    pip install streamlit
+
+%files
+    app.py /app/app.py
+    entrypoint.sh /app/entrypoint.sh
+
+%environment
+    export BASEURLPATH=""
+    export SERVER_ADDRESS=""
+    export SERVER_PORT="8501"
+    export TOKEN=""
+
+%runscript
+    exec /app/entrypoint.sh
