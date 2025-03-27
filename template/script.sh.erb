@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 # Benchmark info
 echo "TIMING - Starting main script at: $(date)"
 
@@ -10,7 +12,7 @@ cd "${HOME}"
 # Start the Ollama server in the background
 #    Adjust the Singularity path if needed
 ##############################################################################
-singularity exec --nv /storage/research/dsl_shared/solutions/singularity/ollama.sif \
+apptainer run --nv /storage/research/dsl_shared/solutions/singularity/ollama.sif \
   ollama serve &
 
 # Wait a bit to ensure Ollama server is ready (listening on 127.0.0.1:11411)
@@ -47,19 +49,7 @@ python -m pip install --user streamlit requests
 # Benchmark info
 echo "TIMING - Starting streamlit at: $(date)"
 
-# streamlit run app.py \
-#   --server.address $NODE_IP \
-#   --server.baseUrlPath "node/$HOST/$PORT" \
-#   --server.port $PORT \
-#   --server.host $HOST \
-#   --server.headless true \
-#   --browser.gatherUsageStats false
-
-# Use apptainer build --fakeroot $HOME/ondemand/dev/streamlit/streamlit.sif ../src/streamlit.def
-# to build the Singularity container
-
 # Launch the Streamlit UI server
-set -x
 apptainer run \
     --env BASEURLPATH="$SERVER_BASEURLPATH" \
     --env SERVER_ADDRESS="ondemand.hpc.unibe.ch" \

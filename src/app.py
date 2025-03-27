@@ -72,7 +72,6 @@ user_token = query_params.get("token")
 # Authentication Check
 if user_token == TOKEN:
     st.set_page_config(page_title="Ollama Chat", layout="wide")
-    st.success("Authentication Successful!")
     st.title("DSL Ollama Chat")
     process_conversation()
 else:
