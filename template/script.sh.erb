@@ -7,7 +7,7 @@ echo "TIMING - Starting main script at: $(date)"
 cd "${HOME}"
 
 ##############################################################################
-# 2) Start the Ollama server in the background
+# Start the Ollama server in the background
 #    Adjust the Singularity path if needed
 ##############################################################################
 singularity exec --nv /storage/research/dsl_shared/solutions/singularity/ollama.sif \
@@ -17,65 +17,7 @@ singularity exec --nv /storage/research/dsl_shared/solutions/singularity/ollama.
 sleep 5
 
 ##############################################################################
-# 3) Create a small Streamlit application to chat with Ollama
-##############################################################################
-cat <<EOF > app.py
-import streamlit as st
-import requests
-import json
-
-st.set_page_config(page_title="Ollama Chat", layout="wide")
-st.title("DSL Ollama Chat")
-
-# Initialize session state for chat
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
-
-user_input = st.text_input("Your prompt:", key="prompt_input")
-
-# Function to send a request to Ollama
-def ollama_chat(full_prompt):
-    url = "http://127.0.0.1:11411/generate"
-    payload = {"prompt": full_prompt}
-    response = requests.post(url, json=payload, timeout=300)
-    if response.status_code == 200:
-        data = response.json()
-        # Handle old/new JSON format
-        if isinstance(data, list):
-            # each item might have "content"
-            result = "".join([chunk["content"] for chunk in data if "content" in chunk])
-        elif isinstance(data, dict):
-            result = data.get("content", "")
-        else:
-            result = "Error parsing response."
-        return result
-    else:
-        return f"Error {response.status_code}: {response.text}"
-
-# On button click, send prompt to Ollama
-if st.button("Send"):
-    st.session_state["messages"].append({"role": "user", "content": user_input})
-    conversation = ""
-    for msg in st.session_state["messages"]:
-        role = msg["role"]
-        text = msg["content"]
-        conversation += f"{'User' if role=='user' else 'Assistant'}: {text}\n"
-
-    answer = ollama_chat(conversation)
-    st.session_state["messages"].append({"role": "assistant", "content": answer})
-
-# Display the conversation
-for msg in st.session_state["messages"]:
-    role = msg["role"]
-    text = msg["content"]
-    if role == "user":
-        st.markdown(f"**User:** {text}")
-    else:
-        st.markdown(f"**Assistant:** {text}")
-EOF
-
-##############################################################################
-# 4) Load Python / Install dependencies
+# Load Python / Install dependencies
 #    If your site has a valid python module, load it. Otherwise remove or fix.
 ##############################################################################
 <%- unless context.modules.blank? -%>
@@ -99,7 +41,7 @@ python -m pip install --user --upgrade pip
 python -m pip install --user streamlit requests
 
 ##############################################################################
-# 5) Launch Streamlit on the OOD-provided port
+# Launch Streamlit on the OOD-provided port
 #    OOD typically sets $PORT or $WEB_PORT. Fallback to 8080 if not set.
 ##############################################################################
 # Benchmark info
