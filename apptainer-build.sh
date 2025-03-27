@@ -3,4 +3,4 @@
 
 set -x
 cd src
-apptainer build --fakeroot ../streamlit.sif streamlit.def
+apptainer build --fakeroot --force ../streamlit.sif streamlit.def
