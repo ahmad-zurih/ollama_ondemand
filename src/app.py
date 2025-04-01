@@ -15,7 +15,7 @@ import json
 
 # Function to send a request to Ollama
 def ollama_chat(full_prompt):
-    url = "http://127.0.0.1:11411/generate"
+    url = "http://127.0.0.1:11411/api/generate"
     payload = {"prompt": full_prompt}
     response = requests.post(url, json=payload, timeout=300)
     if response.status_code == 200:
