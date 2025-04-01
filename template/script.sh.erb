@@ -13,10 +13,14 @@ cd "${HOME}"
 #    Adjust the Singularity path if needed
 ##############################################################################
 apptainer run --nv /storage/research/dsl_shared/solutions/singularity/ollama.sif \
-    ollama serve &
+    --env OLLAMA_HOST=0.0.0.0:11411 ollama serve &
 
 # Wait a bit to ensure Ollama server is ready (listening on 127.0.0.1:11434)
 sleep 5
+
+# Check if the server is running
+curl http://127.0.0.1:11411
+curl http://localhost:11411
 
 ##############################################################################
 # Load Python / Install dependencies
