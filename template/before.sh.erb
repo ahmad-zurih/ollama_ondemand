@@ -20,8 +20,10 @@
 #   - $host (already defined earlier, so no need to define again)
 #       The host that the web server is listening on
 #
-#   - $port
+#   - $server_port
 #       The port that the web server is listening on
+#   - $llm_server_port
+#       The port that the LLM web server is listening on
 #
 #   - $password
 #       The plain text password used to authenticate to the web server with
@@ -30,11 +32,17 @@
 [[ $(type -t module) == "function" ]] && export -f module
 
 # Find available port to run server on
-port=$(find_port)
+server_port=$(find_port)
+llm_server_port=$(find_port)
+
+while server_port == $llm_server_port; do
+    llm_server_port=$(find_port)
+done
 
 # Generate password (requires OpenSSL installed)
 password="$(create_passwd 16)"
 
-export SERVER_PORT=${port}
-export SERVER_BASEURLPATH="/node/${host}/${port}/"
+export SERVER_PORT=${server_port}
+export LLM_SERVER_PORT=${llm_server_port}
+export SERVER_BASEURLPATH="/node/${host}/${server_port}/"
 export TOKEN=${password}

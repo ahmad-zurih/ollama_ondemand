@@ -16,6 +16,7 @@ From: python:3.11
     export BASEURLPATH=""
     export SERVER_ADDRESS=""
     export SERVER_PORT="8501"
+    export LLM_SERVER_PORT="8502"
     export TOKEN=""
 
 %runscript
