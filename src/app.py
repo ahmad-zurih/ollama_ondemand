@@ -76,9 +76,4 @@ if user_token == TOKEN:
     process_conversation()
 else:
     st.error("Access Denied: Invalid or Missing Token")
-    st.stop()  # Stop execution if authentication fails    
-
-
-
-
-
+    st.stop()  # Stop execution if authentication fails

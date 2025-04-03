@@ -1,0 +1,51 @@
+BootStrap: docker
+From: huggingface/transformers-pytorch-gpu:latest
+
+%post
+    # Update system
+    apt update && apt upgrade -y
+
+    # Install all required dependencies in one command
+    apt install -y --no-install-recommends \
+        build-essential curl ffmpeg git \
+        libsndfile1-dev tesseract-ocr espeak-ng \
+        python3 python3-pip libc6 libc-bin \
+        pciutils lshw
+
+    # Remove npm (to avoid conflicts with Node.js 18 install)
+    apt remove -y npm || true
+
+    # Install Node.js 18
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+    apt install -y --no-install-recommends nodejs
+
+    # Upgrade Python pip
+    python3 -m pip install --no-cache-dir --upgrade pip
+
+    # Install Python packages
+    pip install --no-cache-dir \
+        scikit-learn umap-learn matplotlib pandas seaborn \
+        opencv-python-headless scikit-image mlflow datasets \
+        flask requests Flask-Cors ollama streamlit
+
+    # Install Ollama
+    curl -fsSL https://ollama.com/install.sh | sh
+
+    # Clean up to reduce container size
+    apt clean && rm -rf /var/lib/apt/lists/*
+
+    # Create application directory
+    mkdir -p /app
+
+%files
+    app.py /app/app.py
+    entrypoint.sh /app/entrypoint.sh
+
+%environment
+    export BASEURLPATH=""
+    export SERVER_ADDRESS=""
+    export SERVER_PORT="8501"
+    export TOKEN=""
+
+%runscript
+    exec /app/entrypoint.sh
