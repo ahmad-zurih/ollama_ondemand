@@ -8,7 +8,7 @@ sleep 10
 # Start Streamlit
 exec streamlit run /app/app.py \
 	--server.port "$SERVER_PORT" \
-	--server.address "$SERVER_ADDRESS" \
+	--server.address 0.0.0.0 \
 	--browser.serverAddress "$SERVER_ADDRESS" \
 	--server.baseUrlPath "$BASEURLPATH" \
 	--server.headless true \
