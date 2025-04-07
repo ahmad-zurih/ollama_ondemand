@@ -43,6 +43,6 @@ done
 password="$(create_passwd 16)"
 
 export SERVER_PORT=${server_port}
-export LLM_SERVER_PORT=${llm_server_port}
+export OLLAMA_HOST=0.0.0.0:${llm_server_port}
 export SERVER_BASEURLPATH="/node/${host}/${server_port}/"
 export TOKEN=${password}
