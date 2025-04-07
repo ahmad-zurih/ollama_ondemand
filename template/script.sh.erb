@@ -61,7 +61,8 @@ echo "TIMING - Starting streamlit at: $(date)"
 # Launch the Streamlit UI server
 apptainer run \
     --env BASEURLPATH="$SERVER_BASEURLPATH" \
-    --env SERVER_ADDRESS="ondemand.hpc.unibe.ch" \
+    --env SERVER_ADDRESS="$SERVER_ADDRESS" \
+    --env OLLAMA_HOST= "$OLLAMA_HOST"\
     --env SERVER_PORT="$SERVER_PORT" \
     --env TOKEN="$TOKEN" \
     $HOME/ondemand/dev/ollama_ondemand/streamlit_with_ollama.sif
