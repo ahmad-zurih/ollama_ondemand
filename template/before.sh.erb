@@ -44,6 +44,6 @@ password="$(create_passwd 16)"
 
 export SERVER_PORT=${port}
 export SERVER_ADDRESS="ondemand.hpc.unibe.ch"
-export OLLAMA_HOST=0.0.0.0:${llm_server_port}
+export OLLAMA_HOST="0.0.0.0:${llm_server_port}"
 export SERVER_BASEURLPATH="/node/${host}/${port}/"
 export TOKEN=${password}
